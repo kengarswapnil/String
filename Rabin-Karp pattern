@@ -1,0 +1,50 @@
+public class RabinKarp {
+
+    // Rabin-Karp pattern search function
+    public static void search(String text, String pattern, int q) {
+        int d = 256;  // Number of possible characters (ASCII)
+        int m = pattern.length();
+        int n = text.length();
+        int p = 0;    // Hash for pattern
+        int t = 0;    // Hash for text window
+        int h = 1;
+
+        // The value of h = d^(m-1) % q
+        for (int i = 0; i < m - 1; i++) {
+            h = (h * d) % q;
+        }
+
+        // Calculate the initial hash of the pattern and first window of text
+        for (int i = 0; i < m; i++) {
+            p = (d * p + pattern.charAt(i)) % q;
+            t = (d * t + text.charAt(i)) % q;
+        }
+
+        // Sliding the pattern over the text
+        for (int i = 0; i <= n - m; i++) {
+            // If the hash matches, compare the actual strings
+            if (p == t) {
+                boolean match = true;
+                for (int j = 0; j < m; j++) {
+                    if (text.charAt(i + j) != pattern.charAt(j)) {
+                        match = false;
+                        break;
+                    }
+                }
+
+                if (match) {
+                    System.out.println("Pattern found at index " + i);
+                }
+            }
+
+            // Calculate the hash for the next window
+            if (i < n - m) {
+                t = (d * (t - text.charAt(i) * h) + text.charAt(i + m)) % q;
+
+                // Handle negative hash values
+                if (t < 0) {
+                    t = (t + q);
+                }
+            }
+        }
+    }
